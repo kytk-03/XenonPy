@@ -5,10 +5,10 @@ import math
 import types
 from datetime import datetime, timedelta
 from functools import wraps
+from pathlib import Path
 from platform import version as sys_ver
 from sys import version as py_ver
 
-from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
@@ -17,9 +17,9 @@ import torch.nn.functional as F
 import torch.utils.data as Data
 from sklearn.base import BaseEstimator, RegressorMixin
 
+from .checker import Checker
 from ..._conf import __version__
 from ...utils import TimedMetaClass
-from .checker import Checker
 
 
 def persist(*args, **kwargs):
@@ -38,7 +38,7 @@ def persist(*args, **kwargs):
     n_kwargs = len(kwargs)
 
     def _checked(o):
-        if not isinstance(o, BaseRunner):
+        if not isinstance(o, SequentialRunner):
             raise TypeError('persistence only decorate <BaseRunner> inherent object\'s method')
         return o
 
@@ -115,7 +115,7 @@ def persist(*args, **kwargs):
         return _deco
 
 
-class BaseRunner(BaseEstimator, metaclass=TimedMetaClass):
+class SequentialRunner(BaseEstimator, metaclass=TimedMetaClass):
 
     def __init__(self,
                  epochs=2000,
@@ -443,7 +443,7 @@ class BaseRunner(BaseEstimator, metaclass=TimedMetaClass):
         return ret
 
 
-class RegressionRunner(BaseRunner, RegressorMixin):
+class RegressionRunner(SequentialRunner, RegressorMixin):
     """
     Run model.
     """
@@ -479,7 +479,7 @@ class RegressionRunner(BaseRunner, RegressorMixin):
         self.logger('Runner environment:', 'Running dir: {}'.format(self._work_dir),
                     'Epochs: {}'.format(self._epochs), 'Context: {}'.format(self._device),
                     'Check step: {}'.format(self._check_step), 'Log step: {}\n'.format(
-                        self._log_step))
+                self._log_step))
 
     @property
     def lr(self):
