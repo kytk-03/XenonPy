@@ -63,7 +63,7 @@ def test_base_bayesian_ridge_1(data):
     try:
         assert isinstance(bre['bandgap'], BayesianRidge)
         assert isinstance(bre['density'], BayesianRidge)
-    except IndexError:
+    except KeyError:
         assert False
     else:
         assert True
